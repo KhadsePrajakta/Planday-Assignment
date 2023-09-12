@@ -1,0 +1,60 @@
+import { test, expect } from '@playwright/test'
+
+
+    test('planday', async ({ page }) => {
+        await page.goto('https://id.planday.com/Login?returnUrl=%2Fconnect%2Fauthorize%2Fcallback%3Fclient_id%3Db116846e-8ff0-42dc-83b6-5392543ca73c%26redirect_uri%3Dhttps%253A%252F%252Fqa-challenge-a.planday.com%252Fauth-callback%26response_type%3Dcode%26scope%3Dopenid%2520impersonate%2520plandayid%26state%3Db3ab32a8b1d441528c826c24fca36ff3%26code_challenge%3DM_9fjtnEeP-uWM3bgFIMACKigtXcuKMVWFgdCOs9mUc%26code_challenge_method%3DS256%26acr_values%3Dtenant%253Aqa-challenge-a.planday.com%26response_mode%3Dquery');
+      
+        await page.click('#cookie-consent-button');
+
+        //login into portal
+
+        await page.getByPlaceholder('E.g. adam@planday.com').fill('prajaktafirke95@gmail.com')
+
+        await page.locator('input[name="Password"]').fill('Asdfghjkl@1');
+        
+        await page.getByRole('button', { name: 'Log in' }).click();
+        await page.waitForTimeout(2000);
+        await page.reload();
+        await page.waitForTimeout(2000);
+
+        // verify the name on the Home page
+        await expect(page.getByText('Hi Prajakta')).toBeVisible();
+
+       //navigate to schedule page
+       await page.locator('.fqTjSF > .sc-fotOHu > :nth-child(2) > .johypa').hover()
+       await page.locator('.fqTjSF > .sc-fotOHu > :nth-child(2) > .johypa').click()
+       await expect(page.locator("//div[normalize-space()='Prajakta Khadse']")).toBeVisible()
+
+       //create shift for today
+
+       await page.locator("div[aria-label='12 September 2023 Prajakta Khadse']").click()
+       await page.waitForTimeout(2000)
+       await page.locator('#shiftStartEnd_start').fill('9:00')
+       await page.getByPlaceholder('To').fill('17:00')
+       await page.getByRole('button',{name:'Create'}).click()
+       await page.waitForTimeout(2000)
+
+       //approve the created shift
+       await page.locator("//div[@class='shift-tile__inner']").hover()
+       await page.locator(".three-dots-icon").click()
+       await page.locator("//div[@title='Approve']").click()
+
+       //disapprove the shift
+       await page.locator("//footer[@class='shift-tile__footer']").click()
+       await page.locator("//div[@class='switch switch--primary switch--medium switch--on']").click()
+       await page.locator("//button[normalize-space()='Save']").click()
+
+       //verify the shift is disapprove
+       await page.locator("//div[@class='shift-tile__inner']").hover()
+       await page.locator(".three-dots-icon").click()
+       await expect(page.locator("//div[@title='Approve']")).toBeVisible()
+
+       await page.waitForTimeout(2000)
+
+       await page.close()
+        
+
+
+})
+
+
